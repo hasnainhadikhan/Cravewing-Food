@@ -4,13 +4,21 @@ import { fullMenu, SAUCES_LIST } from "../constants/data";
 import { useCart } from "../contexts/CartContext";
 import { useScrollReveal } from "../hooks/useScrollReveal";
 
-export default function MenuPage() {
+type MenuItem = {
+  name: string;
+  price: string;
+  desc: string;
+  tags: string[];
+  image: string;
+};
+
+export default function MenuPage(): JSX.Element {
   const [activeTab, setActiveTab] = useState(0);
   const [selectedSauce, setSelectedSauce] = useState("Buffalo Classic");
   const { addToCart } = useCart();
   const { ref: heroRef, visible: heroVisible } = useScrollReveal(0.1);
 
-  const handleAddToCart = (item, category) => {
+  const handleAddToCart = (item: MenuItem, category: string) => {
     const priceNum = parseFloat(item.price.replace("$", ""));
     addToCart({
       id: item.name,
@@ -23,60 +31,39 @@ export default function MenuPage() {
   };
 
   return (
-    <div style={{ background: CREAM, minHeight: "100vh" }}>
+    <div className="min-h-screen bg-[#FFF6EC]">
       {/* Page header */}
-      <div ref={heroRef} className="pt-28 pb-16 text-center" style={{ background: CHAR }}>
+      <div ref={heroRef} className="pt-28 pb-16 text-center bg-[#221A17]">
         <div
-          style={{
-            opacity: heroVisible ? 1 : 0,
-            transform: heroVisible ? "translateY(0)" : "translateY(30px)",
-            transition: "all 0.8s cubic-bezier(0.22,1,0.36,1)",
-          }}
+          className={`mx-auto max-w-4xl transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+            heroVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-7"
+          }`}
         >
-          <h1
-            style={{
-              fontFamily: "Anton, sans-serif",
-              fontSize: "clamp(40px, 7vw, 72px)",
-              color: "#fff",
-              letterSpacing: 2,
-            }}
-          >
+          <h1 className="mx-auto text-[clamp(40px,7vw,72px)] font-[Anton,_sans-serif] tracking-[0.14em] text-white">
             THE MENU
           </h1>
-          <p style={{ fontFamily: "Inter, sans-serif", color: "rgba(255,255,255,0.7)", marginTop: 12, fontSize: 18, maxWidth: 600, margin: "12px auto 0" }}>
+          <p className="mx-auto mt-3 max-w-[600px] text-[18px] leading-8 text-white/70 font-[Inter,_sans-serif]">
             Discover the full Crave experience with our dynamic menu, featuring bold flavors and fresh ingredients crafted to ignite your taste buds.
           </p>
         </div>
       </div>
 
       {/* Sauce selector */}
-      <div style={{ background: RED, padding: "24px 0" }}>
-        <div className="max-w-7xl mx-auto px-4">
-          <p
-            style={{
-              fontFamily: "Inter, sans-serif",
-              fontSize: 13,
-              color: "rgba(255,255,255,0.9)",
-              marginBottom: 12,
-              textAlign: "center",
-              letterSpacing: 3,
-              fontWeight: 700,
-            }}
-          >
+      <div className="bg-[#D6291E] py-6">
+        <div className="mx-auto max-w-7xl px-4">
+          <p className="text-center text-[13px] tracking-[0.35em] font-bold uppercase text-white/90 font-[Inter,_sans-serif] mb-3">
             CHOOSE YOUR SAUCE
           </p>
-          <div className="flex flex-wrap gap-3 justify-center">
+          <div className="flex flex-wrap justify-center gap-3">
             {SAUCES_LIST.map((s) => (
               <button
                 key={s}
                 onClick={() => setSelectedSauce(s)}
-                className="px-5 py-2.5 rounded-full text-sm font-bold transition-all duration-200 hover:scale-105"
-                style={{
-                  background: selectedSauce === s ? GOLD : "rgba(255,255,255,0.18)",
-                  color: selectedSauce === s ? CHAR : "#fff",
-                  fontFamily: "Inter, sans-serif",
-                  boxShadow: selectedSauce === s ? "0 4px 16px rgba(0,0,0,0.2)" : "none",
-                }}
+                className={`px-5 py-2.5 rounded-full text-sm font-bold transition-all duration-200 hover:scale-105 font-[Inter,_sans-serif] ${
+                  selectedSauce === s
+                    ? "bg-[#FCB316] text-[#221A17] shadow-[0_4px_16px_rgba(0,0,0,0.2)]"
+                    : "bg-white/20 text-white"
+                }`}
               >
                 {s}
               </button>
@@ -86,142 +73,96 @@ export default function MenuPage() {
       </div>
 
       {/* Category tabs */}
-      <div className="sticky top-20 z-30 shadow-md" style={{ background: "#fff", borderBottom: "2px solid #f0e0d0" }}>
-        <div
-          className="max-w-7xl mx-auto px-4 flex overflow-x-auto gap-1 py-4"
-          style={{ scrollbarWidth: "none" }}
-        >
+      <div className="sticky top-20 z-30 shadow-md bg-white border-b-[2px] border-[#f0e0d0]">
+        <div className="mx-auto flex max-w-7xl gap-1 overflow-x-auto px-4 py-4">
           {fullMenu.map((cat, i) => (
             <button
               key={cat.category}
               onClick={() => setActiveTab(i)}
-              className="flex-shrink-0 flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-200"
-              style={{
-                background: activeTab === i ? RED : "transparent",
-                color: activeTab === i ? "#fff" : GREY,
-                fontFamily: "Inter, sans-serif",
-                border: activeTab === i ? "none" : "2px solid #e0d0c0",
-              }}
+              className={`flex-shrink-0 flex items-center gap-2 rounded-xl border px-5 py-2.5 text-sm font-bold transition-all duration-200 ${
+                activeTab === i
+                  ? "bg-[#D6291E] text-white border-transparent"
+                  : "bg-transparent text-[#5E5650] border-[#e0d0c0]"
+              } font-[Inter,_sans-serif]`}
             >
-              <span style={{ fontSize: 18 }}>{cat.icon}</span> {cat.category}
+              <span className="text-[18px]">{cat.icon}</span> {cat.category}
             </button>
           ))}
         </div>
       </div>
 
       {/* Menu items */}
-      <div className="max-w-7xl mx-auto px-4 py-16">
+      <div className="mx-auto max-w-7xl px-4 py-16">
         {fullMenu.map((cat, ci) => (
-        <div key={cat.category} className={activeTab === ci ? "block" : "hidden"}>
-          {/* Category Header */}
-          <div className="flex items-center gap-6 mb-10">
-            <div className="w-20 h-20 rounded-2xl overflow-hidden flex-shrink-0">
-              <img src={cat.image} alt={cat.category} className="w-full h-full object-cover" />
-            </div>
-            <div>
-              <h2
-                style={{
-                  fontFamily: "Anton, sans-serif",
-                  fontSize: 44,
-                  color: CHAR,
-                  letterSpacing: 1,
-                  margin: 0,
-                }}
-              >
-                {cat.category.toUpperCase()}
+          <div key={cat.category} className={activeTab === ci ? "block" : "hidden"}>
+            {/* Category Header */}
+            <div className="mb-10 flex items-center gap-6">
+              <div className="flex-shrink-0 overflow-hidden rounded-2xl bg-[#221A17] w-20 h-20">
+                <img src={cat.image} alt={cat.category} className="h-full w-full object-cover" />
+              </div>
+              <h2 className="text-[44px] font-[Anton,_sans-serif] tracking-[0.04em] text-[#221A17] uppercase">
+                {cat.category}
               </h2>
             </div>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {cat.items.map((item, index) => (
-              <div
-                key={item.name}
-                className="bg-white rounded-3xl overflow-hidden border-2 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2"
-                style={{ borderColor: "#f0e0d0" }}
-              >
-                <div className="h-48 overflow-hidden">
-                  <img src={item.image} alt={item.name} className="w-full h-full object-cover transition-transform duration-500 hover:scale-110" />
-                </div>
-                <div className="p-6">
-                  <div className="flex items-start justify-between gap-4 mb-3">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 flex-wrap mb-2">
-                      <h3
-                        style={{
-                          fontFamily: "Inter, sans-serif",
-                          fontWeight: 800,
-                          fontSize: 18,
-                          color: CHAR,
-                          margin: 0,
-                        }}
-                      >
-                        {item.name}
-                      </h3>
-                      {item.tags.map((t) => (
-                        <span
-                          key={t}
-                          className="px-3 py-1 rounded-full text-xs font-bold"
-                          style={{
-                            background: t.includes("Spicy") ? RED + "25" : GOLD + "35",
-                            color: t.includes("Spicy") ? RED : "#8a6c00",
-                          }}
-                        >
-                          {t}
-                        </span>
-                      ))}
-                    </div>
-                    <p
-                      style={{
-                        fontFamily: "Inter, sans-serif",
-                        fontSize: 14,
-                        color: GREY,
-                        lineHeight: 1.6,
-                        margin: 0,
-                      }}
-                    >
-                      {item.desc}
-                    </p>
-                    {(cat.category.includes("Wings") ||
-                    cat.category.includes("Boneless") ||
-                    cat.category.includes("Tender") ? (
-                      <p
-                        style={{
-                          fontFamily: "Inter, sans-serif",
-                          fontSize: 12,
-                          color: ORANGE,
-                          marginTop: 8,
-                          fontWeight: 700,
-                        }}
-                      >
-                        🔥 with {selectedSauce}
-                      </p>
-                    ) : null)}
-                  </div>
-                  <div
-                    style={{
-                      fontFamily: "Anton, sans-serif",
-                      fontSize: 24,
-                      color: RED,
-                      flexShrink: 0,
-                    }}
-                  >
-                    {item.price}
-                  </div>
-                </div>
-                <button
-                  onClick={() => handleAddToCart(item, cat.category)}
-                  className="mt-4 w-full py-3 rounded-xl font-bold text-lg transition-all hover:scale-[1.02] hover:brightness-110"
-                  style={{ background: RED, color: "#fff", fontFamily: "Inter, sans-serif" }}
+            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+              {cat.items.map((item) => (
+                <div
+                  key={item.name}
+                  className="overflow-hidden rounded-3xl border-2 border-[#f0e0d0] bg-white transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl"
                 >
-                  Add to Order
-                </button>
+                  <div className="h-48 overflow-hidden">
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className="h-full w-full object-cover transition-transform duration-500 hover:scale-110"
+                    />
+                  </div>
+                  <div className="space-y-4 p-6">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1 space-y-3">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <h3 className="text-[18px] font-black text-[#221A17] font-[Inter,_sans-serif]">
+                            {item.name}
+                          </h3>
+                          {item.tags.map((t) => (
+                            <span
+                              key={t}
+                              className={`rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-[0.18em] ${
+                                t.toLowerCase().includes("spicy")
+                                  ? "bg-[#D6291E]/[0.14] text-[#D6291E]"
+                                  : "bg-[#FCB316]/[0.15] text-[#8a6c00]"
+                              }`}
+                            >
+                              {t}
+                            </span>
+                          ))}
+                        </div>
+                        <p className="text-sm leading-7 text-[#5E5650] font-[Inter,_sans-serif]">{item.desc}</p>
+                        {(cat.category.includes("Wings") ||
+                          cat.category.includes("Boneless") ||
+                          cat.category.includes("Tender")) && (
+                          <p className="text-sm font-semibold text-[#F26B21] font-[Inter,_sans-serif]">
+                            🔥 with {selectedSauce}
+                          </p>
+                        )}
+                      </div>
+                      <div className="whitespace-nowrap text-[24px] font-[Anton,_sans-serif] text-[#D6291E]">
+                        {item.price}
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => handleAddToCart(item, cat.category)}
+                      className="w-full rounded-xl bg-[#D6291E] py-3 text-lg font-bold text-white transition duration-200 hover:brightness-110 font-[Inter,_sans-serif]"
+                    >
+                      Add to Order
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
       </div>
     </div>
   );

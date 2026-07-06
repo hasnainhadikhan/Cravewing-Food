@@ -63,16 +63,26 @@ export default function AboutPage() {
         <div
           ref={r1}
           className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center"
-          style={{
-            opacity: v1 ? 1 : 0,
-            transform: v1 ? "translateY(0)" : "translateY(40px)",
-            transition: "all 0.7s",
-          }}
+          style={{ opacity: v1 ? 1 : 0, transition: "opacity 0.7s" }}
         >
-          <div className="rounded-2xl overflow-hidden h-80 md:h-96" style={{ background: CHAR }}>
+          <div
+            className="rounded-2xl overflow-hidden h-80 md:h-96"
+            style={{
+              background: CHAR,
+              opacity: v1 ? 1 : 0,
+              transform: v1 ? "translateX(0)" : "translateX(-40px)",
+              transition: "all 0.7s ease-out",
+            }}
+          >
             <img src={IMGS.about} alt="Our kitchen" className="w-full h-full object-cover" />
           </div>
-          <div>
+          <div
+            style={{
+              opacity: v1 ? 1 : 0,
+              transform: v1 ? "translateX(0)" : "translateX(40px)",
+              transition: "all 0.7s ease-out",
+            }}
+          >
             <div
               className="text-sm font-bold tracking-widest mb-3"
               style={{ color: ORANGE, fontFamily: "Inter, sans-serif" }}
@@ -111,13 +121,15 @@ export default function AboutPage() {
         <div
           ref={r2}
           className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center"
-          style={{
-            opacity: v2 ? 1 : 0,
-            transform: v2 ? "translateY(0)" : "translateY(40px)",
-            transition: "all 0.7s",
-          }}
+          style={{ opacity: v2 ? 1 : 0, transition: "opacity 0.7s" }}
         >
-          <div>
+          <div
+            style={{
+              opacity: v2 ? 1 : 0,
+              transform: v2 ? "translateX(0)" : "translateX(-40px)",
+              transition: "all 0.7s ease-out",
+            }}
+          >
             <div
               className="text-sm font-bold tracking-widest mb-3"
               style={{ color: ORANGE, fontFamily: "Inter, sans-serif" }}
@@ -148,7 +160,15 @@ export default function AboutPage() {
               Their vision was simple yet bold: to turn Crave into the go-to spot for fresh, authentic halal platters with an unmistakable twist. Inspired by the heat of the grill and the flavor that only comes from fire, "Crave" became more than just a name, it became a promise.
             </p>
           </div>
-          <div className="rounded-2xl overflow-hidden h-80" style={{ background: CHAR }}>
+          <div
+            className="rounded-2xl overflow-hidden h-80"
+            style={{
+              background: CHAR,
+              opacity: v2 ? 1 : 0,
+              transform: v2 ? "translateX(0)" : "translateX(40px)",
+              transition: "all 0.7s ease-out",
+            }}
+          >
             <img src={IMGS.team} alt="Founders" className="w-full h-full object-cover" />
           </div>
         </div>
