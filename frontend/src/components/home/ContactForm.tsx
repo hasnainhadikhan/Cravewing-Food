@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { Send, Check, User, Mail, MessageSquare } from "lucide-react";
 import { RED, GOLD, CHAR, GREY, CREAM } from "../../constants/brand";
+import { post, ApiError } from "../../lib/api";
 
 export default function ContactForm() {
   const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
   const [sent, setSent] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const validate = () => {
@@ -15,14 +17,27 @@ export default function ContactForm() {
     return e;
   };
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     const errs = validate();
     if (Object.keys(errs).length) {
       setErrors(errs);
       return;
     }
-    setSent(true);
+    setSubmitting(true);
+    setErrors({});
+    try {
+      await post("/contact", form);
+      setSent(true);
+    } catch (err) {
+      if (err instanceof ApiError && err.errors) {
+        setErrors(Object.fromEntries(Object.entries(err.errors).map(([k, v]) => [k, v[0]])));
+      } else {
+        setErrors({ message: "Couldn't send right now. Please try again." });
+      }
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (sent) {
@@ -146,10 +161,11 @@ export default function ContactForm() {
 
       <button
         type="submit"
-        className="flex items-center justify-center gap-2 px-8 py-4 rounded-xl font-bold text-lg transition-all hover:scale-105 hover:brightness-110"
+        disabled={submitting}
+        className="flex items-center justify-center gap-2 px-8 py-4 rounded-xl font-bold text-lg transition-all hover:-translate-y-0.5 hover:shadow-lg hover:brightness-110"
         style={{ background: RED, color: "#fff", fontFamily: "Inter, sans-serif" }}
       >
-        <Send size={18} /> Send Message
+        <Send size={18} /> {submitting ? "Sending..." : "Send Message"}
       </button>
     </form>
   );

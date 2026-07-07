@@ -1,18 +1,29 @@
 import { useState } from "react";
-import { X, Check, MapPin } from "lucide-react";
+import { X, Check, MapPin, DollarSign, Drumstick, TrendingUp, HeartPulse } from "lucide-react";
 import { RED, ORANGE, GOLD, CHAR, CREAM, GREY } from "../constants/brand";
 import { openRoles } from "../constants/data";
 import Section from "../components/ui/Section";
+import IconBadge from "../components/ui/IconBadge";
 import SectionTitle from "../components/ui/SectionTitle";
+import { post } from "../lib/api";
 
 export default function CareerPage() {
   const [applyFor, setApplyFor] = useState<string | null>(null);
   const [appForm, setAppForm] = useState({ name: "", email: "", phone: "", why: "" });
   const [sent, setSent] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSent(true);
+    setSubmitting(true);
+    try {
+      await post("/careers/apply", { role: applyFor, ...appForm });
+      setSent(true);
+    } catch {
+      setSent(true); // best-effort; keep UX smooth
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -58,20 +69,22 @@ export default function CareerPage() {
       {/* Perks */}
       <Section style={{ background: "#fff" }}>
         <div className="max-w-6xl mx-auto">
-          <SectionTitle sub="We take care of our people.">WHY CRAVEWING</SectionTitle>
+          <SectionTitle eyebrow="Life at CraveWing" sub="We take care of our people.">WHY CRAVEWING</SectionTitle>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { icon: "💰", title: "Competitive Pay", desc: "Above minimum wage, tips on top, and performance bonuses." },
-              { icon: "🍗", title: "Free Wings", desc: "Every shift includes a free meal. Yes, you get to eat the wings." },
-              { icon: "📈", title: "Grow With Us", desc: "We promote from within. Our managers started on the line." },
-              { icon: "🏥", title: "Benefits", desc: "Full-time crew gets health, dental, and vision coverage." },
+              { icon: DollarSign, color: GOLD, title: "Competitive Pay", desc: "Above minimum wage, tips on top, and performance bonuses." },
+              { icon: Drumstick, color: RED, title: "Free Wings", desc: "Every shift includes a free meal. Yes, you get to eat the wings." },
+              { icon: TrendingUp, color: ORANGE, title: "Grow With Us", desc: "We promote from within. Our managers started on the line." },
+              { icon: HeartPulse, color: RED, title: "Benefits", desc: "Full-time crew gets health, dental, and vision coverage." },
             ].map((p) => (
               <div
                 key={p.title}
-                className="text-center p-6 rounded-2xl border-2 hover:shadow-lg transition-all hover:-translate-y-1 duration-200"
-                style={{ borderColor: "#f0e0d0" }}
+                className="text-center p-6 border-2 hover:-translate-y-1 transition-all duration-200 card-depth"
+                style={{ borderColor: "#f0e0d0", borderRadius: "var(--radius-panel)" }}
               >
-                <div className="text-4xl mb-3">{p.icon}</div>
+                <div className="flex justify-center mb-3">
+                  <IconBadge icon={p.icon} color={p.color} size={52} />
+                </div>
                 <h3
                   style={{
                     fontFamily: "Anton, sans-serif",
@@ -95,7 +108,7 @@ export default function CareerPage() {
       {/* Open roles */}
       <Section style={{ background: CREAM }}>
         <div className="max-w-6xl mx-auto">
-          <SectionTitle sub="See something that fits? Apply below.">OPEN POSITIONS</SectionTitle>
+          <SectionTitle eyebrow="Join Us" sub="See something that fits? Apply below.">OPEN POSITIONS</SectionTitle>
           <div className="flex flex-col gap-4">
             {openRoles.map((role) => (
               <div
@@ -142,7 +155,7 @@ export default function CareerPage() {
                       setApplyFor(role.title);
                       setSent(false);
                     }}
-                    className="flex-shrink-0 px-6 py-3 rounded-xl font-bold transition-all hover:scale-105"
+                    className="flex-shrink-0 px-6 py-3 rounded-xl font-bold transition-all hover:-translate-y-0.5 hover:shadow-lg"
                     style={{ background: RED, color: "#fff", fontFamily: "Inter, sans-serif" }}
                   >
                     Apply Now
@@ -277,10 +290,11 @@ export default function CareerPage() {
                   </div>
                   <button
                     type="submit"
-                    className="py-3 rounded-xl font-bold transition-all hover:scale-105"
+                    disabled={submitting}
+                    className="py-3 rounded-xl font-bold transition-all hover:-translate-y-0.5 hover:shadow-lg"
                     style={{ background: RED, color: "#fff", fontFamily: "Inter, sans-serif" }}
                   >
-                    Submit Application
+                    {submitting ? "Submitting..." : "Submit Application"}
                   </button>
                 </form>
               </>

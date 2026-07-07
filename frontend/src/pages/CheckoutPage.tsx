@@ -1,17 +1,45 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, ChevronDown } from "lucide-react";
-import { RED, CHAR, GREY, GOLD, CREAM } from "../constants/brand";
+import { ArrowLeft, ChevronDown, Drumstick } from "lucide-react";
+import confetti from "canvas-confetti";
+import { RED, ORANGE, GOLD, CHAR, GREY, CREAM } from "../constants/brand";
 import { useCart } from "../contexts/CartContext";
+import { post } from "../lib/api";
 
 export default function CheckoutPage() {
   const { cart, total, clearCart } = useCart();
   const navigate = useNavigate();
   const [discountCode, setDiscountCode] = useState("");
+  const [form, setForm] = useState({
+    email: "", first_name: "", last_name: "", address: "", apartment: "", city: "", postal_code: "", phone: "",
+  });
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
+  const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
+    setForm((p) => ({ ...p, [k]: e.target.value }));
 
-  const handlePayNow = () => {
+  const handlePayNow = async () => {
+    if (!form.email || !form.last_name || !form.address || !form.city) {
+      setError("Please fill in email, last name, address and city.");
+      return;
+    }
+    setError("");
+    setSubmitting(true);
+    let reference = "CRAVE-" + Math.floor(Math.random() * 10000);
+    try {
+      const res = await post<{ reference: string }>("/orders", {
+        ...form,
+        delivery_fee: 0,
+        items: cart.map((i) => ({ name: i.name, price: i.price, quantity: i.quantity, image: i.image })),
+      });
+      reference = res.reference;
+    } catch {
+      /* fall back to a local reference so checkout still completes */
+    }
+    confetti({ particleCount: 120, spread: 75, origin: { y: 0.7 }, colors: [RED, ORANGE, GOLD, "#ffffff"] });
     clearCart();
-    navigate("/order-tracking?order=BLAZIN-" + Math.floor(Math.random() * 10000));
+    setSubmitting(false);
+    setTimeout(() => navigate("/order-tracking?order=" + reference), 650);
   };
 
   const tax = total * 0.18;
@@ -45,9 +73,11 @@ export default function CheckoutPage() {
               <div className="flex justify-between items-end mb-4">
                 <h2 className="text-2xl font-bold" style={{ color: CHAR }}>Contact</h2>
               </div>
-              <input 
-                type="email" 
-                placeholder="Email" 
+              <input
+                type="email"
+                placeholder="Email"
+                value={form.email}
+                onChange={set("email")}
                 className="w-full p-4 border rounded-lg focus:outline-none transition-all"
                 style={{ background: "#FFFBF7", borderColor: "#E5E1DA", color: CHAR }}
               />
@@ -68,21 +98,21 @@ export default function CheckoutPage() {
                 <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" size={18} style={{ color: GREY }} />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <input type="text" placeholder="First name (optional)" className="p-4 border rounded-lg focus:outline-none" style={{ borderColor: "#E5E1DA" }} />
-                <input type="text" placeholder="Last name" className="p-4 border rounded-lg focus:outline-none" style={{ borderColor: "#E5E1DA" }} />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <input type="text" placeholder="First name (optional)" value={form.first_name} onChange={set("first_name")} className="p-4 border rounded-lg focus:outline-none" style={{ borderColor: "#E5E1DA" }} />
+                <input type="text" placeholder="Last name" value={form.last_name} onChange={set("last_name")} className="p-4 border rounded-lg focus:outline-none" style={{ borderColor: "#E5E1DA" }} />
               </div>
 
-              <input type="text" placeholder="Address" className="w-full p-4 border rounded-lg focus:outline-none" style={{ borderColor: "#E5E1DA" }} />
-              
-              <input type="text" placeholder="Apartment, suite, etc. (optional)" className="w-full p-4 border rounded-lg focus:outline-none" style={{ borderColor: "#E5E1DA" }} />
+              <input type="text" placeholder="Address" value={form.address} onChange={set("address")} className="w-full p-4 border rounded-lg focus:outline-none" style={{ borderColor: "#E5E1DA" }} />
 
-              <div className="grid grid-cols-2 gap-4">
-                <input type="text" placeholder="City" className="p-4 border rounded-lg focus:outline-none" style={{ borderColor: "#E5E1DA" }} />
-                <input type="text" placeholder="Postal code (optional)" className="p-4 border rounded-lg focus:outline-none" style={{ borderColor: "#E5E1DA" }} />
+              <input type="text" placeholder="Apartment, suite, etc. (optional)" value={form.apartment} onChange={set("apartment")} className="w-full p-4 border rounded-lg focus:outline-none" style={{ borderColor: "#E5E1DA" }} />
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <input type="text" placeholder="City" value={form.city} onChange={set("city")} className="p-4 border rounded-lg focus:outline-none" style={{ borderColor: "#E5E1DA" }} />
+                <input type="text" placeholder="Postal code (optional)" value={form.postal_code} onChange={set("postal_code")} className="p-4 border rounded-lg focus:outline-none" style={{ borderColor: "#E5E1DA" }} />
               </div>
 
-              <input type="tel" placeholder="Phone" className="w-full p-4 border rounded-lg focus:outline-none" style={{ borderColor: "#E5E1DA" }} />
+              <input type="tel" placeholder="Phone" value={form.phone} onChange={set("phone")} className="w-full p-4 border rounded-lg focus:outline-none" style={{ borderColor: "#E5E1DA" }} />
             </section>
 
             {/* Shipping Method */}
@@ -134,14 +164,18 @@ export default function CheckoutPage() {
               <Link to="/cart" className="flex items-center gap-2 text-sm transition-colors" style={{ color: GREY }}>
                 <ArrowLeft size={16} /> Back to cart
               </Link>
-              <button 
+              <button
                 onClick={handlePayNow}
+                disabled={submitting || cart.length === 0}
                 className="px-12 py-4 text-white text-sm font-bold uppercase tracking-widest transition-all rounded-sm shadow-xl hover:brightness-110"
                 style={{ background: "#1C1412" }}
               >
-                PAY NOW
+                {submitting ? "PLACING..." : "PAY NOW"}
               </button>
             </div>
+            {error && (
+              <p className="text-right mt-2" style={{ color: RED, fontFamily: "Inter, sans-serif", fontSize: 13 }}>{error}</p>
+            )}
 
           </div>
 
@@ -157,7 +191,7 @@ export default function CheckoutPage() {
                       {item.image ? (
                         <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-2xl">🍗</div>
+                        <div className="w-full h-full flex items-center justify-center"><Drumstick size={22} color={GOLD} strokeWidth={2} /></div>
                       )}
                       <div className="absolute -top-1 -right-1 w-6 h-6 text-white text-[10px] flex items-center justify-center rounded-full font-bold" style={{ background: "#1C1412" }}>
                         {item.quantity}

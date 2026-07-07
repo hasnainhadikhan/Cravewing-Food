@@ -4,6 +4,7 @@ import { RED, ORANGE, GOLD, CHAR, CREAM, GREY, IMGS } from "../constants/brand";
 import { useScrollReveal } from "../hooks/useScrollReveal";
 import Section from "../components/ui/Section";
 import SectionTitle from "../components/ui/SectionTitle";
+import ReviewsSection from "../components/home/ReviewsSection";
 
 export default function AboutPage() {
   const { ref: r1, visible: v1 } = useScrollReveal();
@@ -26,8 +27,8 @@ export default function AboutPage() {
         />
         <div className="relative max-w-4xl mx-auto px-6 text-center">
           <div
-            className="text-sm font-bold tracking-widest mb-4"
-            style={{ color: ORANGE, fontFamily: "Inter, sans-serif" }}
+            className="subhead mb-4"
+            style={{ color: ORANGE, fontSize: 19 }}
           >
             OUR STORY
           </div>
@@ -74,7 +75,7 @@ export default function AboutPage() {
               transition: "all 0.7s ease-out",
             }}
           >
-            <img src={IMGS.about} alt="Our kitchen" className="w-full h-full object-cover" />
+            <img src={IMGS.about} alt="Our kitchen" className="w-full h-full object-cover" loading="lazy" />
           </div>
           <div
             style={{
@@ -84,8 +85,8 @@ export default function AboutPage() {
             }}
           >
             <div
-              className="text-sm font-bold tracking-widest mb-3"
-              style={{ color: ORANGE, fontFamily: "Inter, sans-serif" }}
+              className="subhead mb-3"
+              style={{ color: ORANGE, fontSize: 19 }}
             >
               OUR PHILOSOPHY
             </div>
@@ -131,8 +132,8 @@ export default function AboutPage() {
             }}
           >
             <div
-              className="text-sm font-bold tracking-widest mb-3"
-              style={{ color: ORANGE, fontFamily: "Inter, sans-serif" }}
+              className="subhead mb-3"
+              style={{ color: ORANGE, fontSize: 19 }}
             >
               FOUNDER STORY
             </div>
@@ -169,7 +170,7 @@ export default function AboutPage() {
               transition: "all 0.7s ease-out",
             }}
           >
-            <img src={IMGS.team} alt="Founders" className="w-full h-full object-cover" />
+            <img src={IMGS.team} alt="Founders" className="w-full h-full object-cover" loading="lazy" />
           </div>
         </div>
       </Section>
@@ -185,7 +186,7 @@ export default function AboutPage() {
             transition: "all 0.7s",
           }}
         >
-          <SectionTitle light sub="A story of resilience and community.">
+          <SectionTitle light eyebrow="Our Story" sub="A story of resilience and community.">
             BORN IN A TIME OF CHALLENGE
           </SectionTitle>
           <p
@@ -215,7 +216,7 @@ export default function AboutPage() {
       {/* Menu Highlights */}
       <Section style={{ background: "#fff" }}>
         <div className="max-w-6xl mx-auto">
-          <SectionTitle sub="Something for everyone, every craving covered.">
+          <SectionTitle eyebrow="What We Make" sub="Something for everyone, every craving covered.">
             OUR MENU
           </SectionTitle>
           <div
@@ -237,8 +238,13 @@ export default function AboutPage() {
                 className="text-center p-8 rounded-2xl border-2 transition-all hover:shadow-xl hover:-translate-y-1 duration-300"
                 style={{ borderColor: "#f0e0d0", background: "#fff" }}
               >
-                <div className="flex justify-center mb-4" style={{ color: RED }}>
-                  {item.icon}
+                <div className="flex justify-center mb-4">
+                  <span
+                    className="inline-flex items-center justify-center"
+                    style={{ width: 60, height: 60, borderRadius: 18, background: `${RED}16`, border: `1px solid ${RED}2b`, color: RED }}
+                  >
+                    {item.icon}
+                  </span>
                 </div>
                 <h3
                   style={{
@@ -269,7 +275,7 @@ export default function AboutPage() {
       {/* Commitments */}
       <Section style={{ background: RED }}>
         <div className="max-w-6xl mx-auto">
-          <SectionTitle light sub="This is what we stand for.">
+          <SectionTitle light eyebrow="Our Values" sub="This is what we stand for.">
             OUR VALUES
           </SectionTitle>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -284,8 +290,13 @@ export default function AboutPage() {
                 className="text-center p-6 rounded-2xl"
                 style={{ background: "rgba(255,255,255,0.12)" }}
               >
-                <div className="flex justify-center mb-4" style={{ color: GOLD }}>
-                  {item.icon}
+                <div className="flex justify-center mb-4">
+                  <span
+                    className="inline-flex items-center justify-center"
+                    style={{ width: 60, height: 60, borderRadius: 18, background: `${GOLD}20`, border: `1px solid ${GOLD}3b`, color: GOLD }}
+                  >
+                    {item.icon}
+                  </span>
                 </div>
                 <h3
                   style={{
@@ -314,15 +325,18 @@ export default function AboutPage() {
         </div>
       </Section>
 
+      {/* Reviews */}
+      <ReviewsSection background="#fff" />
+
       {/* Call to Action */}
       <Section style={{ background: CREAM }}>
         <div className="max-w-4xl mx-auto text-center">
-          <SectionTitle sub="From the first bite to the last, we want each visit to feel like a celebration of flavor and quality.">
+          <SectionTitle eyebrow="The Experience" sub="From the first bite to the last, we want each visit to feel like a celebration of flavor and quality.">
             JOIN THE CRAVE FAMILY
           </SectionTitle>
           <Link
             to="/locations"
-            className="inline-flex items-center gap-2 mt-8 px-8 py-4 rounded-xl font-bold text-lg transition-all hover:scale-105"
+            className="inline-flex items-center gap-2 mt-8 px-8 py-4 rounded-xl font-bold text-lg transition-all hover:-translate-y-0.5 hover:shadow-lg"
             style={{ background: RED, color: "#fff", fontFamily: "Anton, sans-serif", letterSpacing: 1 }}
           >
             Find a Location <ArrowRight size={20} />

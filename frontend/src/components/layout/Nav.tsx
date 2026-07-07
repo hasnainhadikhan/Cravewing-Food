@@ -7,11 +7,11 @@ import { useCart } from "../../contexts/CartContext";
 import { useAuth } from "../../contexts/AuthContext";
 
 const navLinks = [
-  { to: "/locations", label: "Locations" },
+  
   { to: "/menu", label: "Menu" },
   { to: "/about", label: "About" },
-  { to: "/reviews", label: "Reviews" },
   { to: "/career", label: "Career" },
+  { to: "/locations", label: "Locations" },
 ];
 
 export default function Nav() {
@@ -108,29 +108,34 @@ export default function Nav() {
        
             <Link
               to="/cart"
+              data-cart-icon
               className="relative p-2 rounded-lg transition-all duration-200 hover:scale-110"
               style={{ background: "rgba(255,255,255,0.1)" }}
             >
               <ShoppingCart size={20} color="#fff" />
               {itemCount > 0 && (
-                <div
+                <motion.div
+                  key={itemCount}
+                  initial={{ scale: 0.4 }}
+                  animate={{ scale: [0.4, 1.35, 1] }}
+                  transition={{ duration: 0.45, ease: [0.34, 1.56, 0.64, 1] }}
                   className="absolute -top-2 -right-2 w-6 h-6 rounded-full flex items-center justify-center shadow-lg"
                   style={{ background: GOLD, color: CHAR, fontFamily: "Anton, sans-serif", fontSize: 14, border: `2px solid ${RED}` }}
                 >
                   {itemCount}
-                </div>
+                </motion.div>
               )}
             </Link>
                  <Link
               to="/catering"
-              className="px-4 py-2 rounded-lg border-2 text-sm font-bold transition-all duration-200 hover:scale-105"
+              className="ml-3 px-4 py-2 rounded-lg border-2 text-sm font-bold transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
               style={{ borderColor: GOLD, color: GOLD, fontFamily: "Inter, sans-serif" }}
             >
               Catering
             </Link>
             <Link
               to="/menu"
-              className="px-5 py-2 rounded-lg text-sm font-bold transition-all duration-200 hover:scale-105 hover:brightness-110"
+              className="px-5 py-2 rounded-lg text-sm font-bold transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:brightness-110"
               style={{ background: RED, color: "#fff", fontFamily: "Inter, sans-serif" }}
             >
               Order Now
@@ -158,16 +163,21 @@ export default function Nav() {
             )}
             <Link
               to="/cart"
+              data-cart-icon
               className="relative p-2"
             >
               <ShoppingCart size={20} color="#fff" />
               {itemCount > 0 && (
-                <div
+                <motion.div
+                  key={itemCount}
+                  initial={{ scale: 0.4 }}
+                  animate={{ scale: [0.4, 1.35, 1] }}
+                  transition={{ duration: 0.45, ease: [0.34, 1.56, 0.64, 1] }}
                   className="absolute -top-2 -right-2 w-6 h-6 rounded-full flex items-center justify-center shadow-lg"
                   style={{ background: GOLD, color: CHAR, fontFamily: "Anton, sans-serif", fontSize: 14, border: `2px solid ${RED}` }}
                 >
                   {itemCount}
-                </div>
+                </motion.div>
               )}
             </Link>
             <button

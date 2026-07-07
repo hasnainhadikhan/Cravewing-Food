@@ -1,11 +1,21 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { MapPin, Phone, Clock } from "lucide-react";
-import { RED, ORANGE, GOLD, CHAR, CREAM, GREY, IMGS } from "../constants/brand";
+import { MapPin, Phone, Clock, Navigation, ArrowRight } from "lucide-react";
+import { RED, ORANGE, GOLD, CHAR, CREAM, GREY } from "../constants/brand";
 import { locations } from "../constants/data";
+
+// Simple open-window heuristic — every location opens 11am, closes late (≥11pm).
+function isOpenNow() {
+  const h = new Date().getHours();
+  return h >= 11 && h < 23;
+}
 
 export default function LocationsPage() {
   const [selected, setSelected] = useState(0);
+  const open = isOpenNow();
+  const mapSrc = `https://maps.google.com/maps?q=${encodeURIComponent(
+    locations[selected].address
+  )}&z=15&output=embed`;
 
   return (
     <div style={{ background: CREAM, minHeight: "100vh" }}>
@@ -96,74 +106,70 @@ export default function LocationsPage() {
               {selected === i && (
                 <Link
                   to="/menu"
-                  className="mt-4 block text-center py-2 rounded-xl font-bold text-sm"
+                  className="mt-4 flex items-center justify-center gap-1.5 py-2 rounded-xl font-bold text-sm"
                   style={{ background: GOLD, color: CHAR, fontFamily: "Inter, sans-serif" }}
                 >
-                  Order from this location →
+                  Order from this location <ArrowRight size={15} />
                 </Link>
               )}
             </button>
           ))}
         </div>
 
-        {/* Map placeholder */}
+        {/* Live map */}
         <div
           className="md:col-span-3 rounded-2xl overflow-hidden border-2 relative"
           style={{ borderColor: "#f0e0d0", minHeight: 500 }}
         >
+          <iframe
+            key={locations[selected].slug}
+            title={`Map of ${locations[selected].name}`}
+            src={mapSrc}
+            className="absolute inset-0 w-full h-full"
+            style={{ border: 0, filter: "saturate(0.9) contrast(1.02)" }}
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            allowFullScreen
+          />
+
+          {/* Branded info card floating over the map */}
           <div
-            className="absolute inset-0"
-            style={{ background: `linear-gradient(135deg, ${CHAR}f0, ${CHAR}88)` }}
+            className="absolute left-4 right-4 bottom-4 md:left-6 md:right-auto md:bottom-6 md:max-w-sm rounded-2xl p-5 backdrop-blur"
+            style={{ background: "rgba(34,26,23,0.92)", boxShadow: "var(--shadow-lift)" }}
           >
-            <img
-              src={IMGS.about}
-              alt="Location"
-              className="w-full h-full object-cover opacity-20"
-            />
-          </div>
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-6 p-8">
-            <div className="w-20 h-20 rounded-full flex items-center justify-center" style={{ background: RED }}>
-              <MapPin size={36} color="#fff" />
+            <div className="flex items-center gap-2 mb-2">
+              <span
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold"
+                style={{
+                  background: open ? "rgba(38,180,110,0.18)" : "rgba(214,41,30,0.18)",
+                  color: open ? "#3ddc84" : RED,
+                  fontFamily: "Inter, sans-serif",
+                }}
+              >
+                <span
+                  className="w-2 h-2 rounded-full"
+                  style={{ background: open ? "#3ddc84" : RED, boxShadow: open ? "0 0 8px #3ddc84" : "none" }}
+                />
+                {open ? "OPEN NOW" : "CLOSED"}
+              </span>
             </div>
-            <h2
-              style={{
-                fontFamily: "Anton, sans-serif",
-                fontSize: 32,
-                color: "#fff",
-                letterSpacing: 1,
-                textAlign: "center",
-              }}
-            >
-              {locations[selected].name.toUpperCase()}
+            <h2 style={{ fontFamily: "Anton, sans-serif", fontSize: 24, color: "#fff", letterSpacing: 0.5 }}>
+              {locations[selected].name.split("—")[1]?.trim().toUpperCase() || "CRAVEWING"}
             </h2>
-            <p
-              style={{
-                fontFamily: "Inter, sans-serif",
-                color: "rgba(255,255,255,0.8)",
-                textAlign: "center",
-                maxWidth: 320,
-              }}
-            >
+            <p style={{ fontFamily: "Inter, sans-serif", color: "rgba(255,255,255,0.75)", fontSize: 13, marginTop: 4 }}>
               {locations[selected].address}
             </p>
-            <p
-              style={{
-                fontFamily: "Inter, sans-serif",
-                fontSize: 13,
-                color: GOLD,
-                textAlign: "center",
-              }}
-            >
+            <p style={{ fontFamily: "Inter, sans-serif", color: GOLD, fontSize: 12, marginTop: 6, lineHeight: 1.5 }}>
               {locations[selected].hours}
             </p>
             <a
               href={`https://maps.google.com/?q=${encodeURIComponent(locations[selected].address)}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="px-6 py-3 rounded-xl font-bold transition-all hover:scale-105"
+              className="mt-4 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all hover:-translate-y-0.5 hover:shadow-lg"
               style={{ background: GOLD, color: CHAR, fontFamily: "Inter, sans-serif" }}
             >
-              Get Directions
+              <Navigation size={15} /> Get Directions
             </a>
           </div>
         </div>

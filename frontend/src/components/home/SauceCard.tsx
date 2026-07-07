@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "motion/react";
-import { CHAR, GREY } from "../../constants/brand";
+import { Flame } from "lucide-react";
 import HeatDots from "../ui/HeatDots";
 import { sauces } from "../../constants/data";
 
@@ -15,10 +15,10 @@ export default function SauceCard({ sauce, index }: SauceCardProps) {
   return (
     <motion.div
       className="cursor-pointer select-none"
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0, y: 30, filter: "blur(12px)" }}
+      whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
       viewport={{ once: true, amount: 0.3 }}
-      transition={{ duration: 0.5, delay: (index % 6) * 0.08, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: 0.6, delay: (index % 6) * 0.08, ease: [0.22, 1, 0.36, 1] }}
       whileHover={{ scale: 1.04 }}
       style={{ perspective: 600 }}
       onClick={() => setFlipped((f) => !f)}
@@ -41,25 +41,46 @@ export default function SauceCard({ sauce, index }: SauceCardProps) {
             border: `2px solid ${sauce.color}40`,
           }}
         >
-          <div
-            className="w-14 h-14 rounded-full flex items-center justify-center text-2xl"
-            style={{ background: sauce.color }}
-          >
-            🔥
+          <div className="relative w-20 h-20">
+            {/* Round sauce photo, tinted toward the sauce's brand color */}
+            <div
+              className="w-20 h-20 rounded-full overflow-hidden relative"
+              style={{ border: `3px solid ${sauce.color}`, boxShadow: `0 6px 18px ${sauce.color}55` }}
+            >
+              <img
+                src={sauce.img}
+                alt={sauce.name}
+                loading="lazy"
+                className="w-full h-full object-cover"
+              />
+              <div
+                className="absolute inset-0"
+                style={{ background: sauce.color, mixBlendMode: "color", opacity: 0.55 }}
+              />
+              <div className="absolute inset-0" style={{ background: `${sauce.color}22` }} />
+            </div>
+            {/* Flame badge */}
+            <div
+              className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full flex items-center justify-center"
+              style={{ background: sauce.color, border: "2px solid #fff" }}
+            >
+              <Flame size={14} color="#fff" fill="#ffffff66" strokeWidth={2.2} />
+            </div>
           </div>
           <h3
             style={{
               fontFamily: "Anton, sans-serif",
               fontSize: 18,
-              color: CHAR,
+              color: "#fff",
               textAlign: "center",
               letterSpacing: 0.5,
+              textShadow: "0 1px 6px rgba(0,0,0,0.4)",
             }}
           >
             {sauce.name.toUpperCase()}
           </h3>
           <HeatDots level={sauce.heat} />
-          <p style={{ fontFamily: "Inter, sans-serif", fontSize: 11, color: GREY, textAlign: "center" }}>
+          <p style={{ fontFamily: "Inter, sans-serif", fontSize: 11, color: "rgba(255,255,255,0.75)", textAlign: "center" }}>
             Tap to reveal
           </p>
         </div>

@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ShoppingCart, Plus, Minus, Trash2, ArrowRight } from "lucide-react";
+import { ShoppingCart, Plus, Minus, Trash2, ArrowRight, Drumstick, Gift } from "lucide-react";
 import { RED, ORANGE, GOLD, CHAR, CREAM, GREY } from "../constants/brand";
 import { useCart } from "../contexts/CartContext";
 import { useScrollReveal } from "../hooks/useScrollReveal";
@@ -34,17 +34,24 @@ export default function CartPage() {
             transform: cartVisible ? "translateY(0)" : "translateY(30px)",
             transition: "all 0.8s cubic-bezier(0.22,1,0.36,1)",
           }}>
-            <div className="bg-white rounded-3xl p-12 text-center border-2 max-w-2xl w-full" style={{borderColor:"#f0e0d0"}}>
-              <div className="inline-flex items-center justify-center w-24 h-24 rounded-full mb-8" style={{background: "#fff4e6"}}>
-                <ShoppingCart size={64} style={{ color: GOLD }} />
+            <div className="bg-white rounded-3xl p-10 sm:p-14 text-center border max-w-2xl w-full card-depth" style={{borderColor:"#eadfce"}}>
+              <div className="inline-flex items-center justify-center w-24 h-24 rounded-full mb-8" style={{background: "#fff4e6", border: `1px solid ${GOLD}40`}}>
+                <ShoppingCart size={52} style={{ color: GOLD }} strokeWidth={2} />
               </div>
-              <h2 style={{ fontFamily: "Anton, sans-serif", fontSize: 40, color: CHAR, marginBottom: 8, letterSpacing: 1 }}>Your Cart is Empty</h2>
-              <p style={{ fontFamily: "Inter, sans-serif", color: GREY, marginBottom: 32, fontSize: 18, fontWeight: 500 }}>Looks like you haven't added anything yet! Start with our delicious wings!</p>
-              <Link to="/menu" className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl font-bold text-xl transition-all hover:scale-105" style={{
-                background: RED, color: "#fff", fontFamily: "Anton, sans-serif", letterSpacing: 1
-              }}>
-                Browse Menu <ArrowRight size={20} />
-              </Link>
+              <h2 style={{ fontFamily: "Anton, sans-serif", fontSize: "clamp(30px,5vw,40px)", color: CHAR, marginBottom: 10, letterSpacing: 1 }}>Your Cart is Empty</h2>
+              <p className="max-w-[42ch] mx-auto" style={{ fontFamily: "Inter, sans-serif", color: GREY, marginBottom: 32, fontSize: 16.5, lineHeight: 1.6 }}>Looks like you haven't added anything yet — start with our delicious wings.</p>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                <Link to="/menu" className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl font-bold uppercase tracking-[0.06em] text-white text-sm transition hover:-translate-y-0.5 hover:shadow-lg hover:brightness-110" style={{
+                  background: RED, fontFamily: "Inter, sans-serif"
+                }}>
+                  Browse Menu <ArrowRight size={16} />
+                </Link>
+                <Link to="/locations" className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl font-bold uppercase tracking-[0.06em] text-sm border-2 transition hover:-translate-y-0.5 hover:shadow-lg" style={{
+                  borderColor: "#eadfce", color: CHAR, fontFamily: "Inter, sans-serif"
+                }}>
+                  Find a Location
+                </Link>
+              </div>
             </div>
           </div>
         ) : (
@@ -67,7 +74,7 @@ export default function CartPage() {
                         {item.image ? (
                           <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                         ) : (
-                          <span style={{fontFamily: "Anton, sans-serif", fontSize:36, color: GOLD}}>🍗</span>
+                          <Drumstick size={34} color={GOLD} strokeWidth={2} />
                         )}
                       </div>
                       <div className="flex-1">
@@ -117,7 +124,7 @@ export default function CartPage() {
 
                 <div className="flex gap-4 items-center pt-4 border-t" style={{borderColor:"#f0e0d0"}}>
                   <button className="px-6 py-3 rounded-xl border-2 flex items-center gap-2 font-bold" style={{borderColor:GOLD, color: GOLD, fontFamily:"Inter, sans-serif"}}>
-                    <span>🎁</span> Add discount
+                    <Gift size={16} /> Add discount
                   </button>
                   <div className="ml-auto text-right">
                     <p style={{fontFamily:"Inter, sans-serif", color: GREY, fontSize:14}}>Subtotal</p>
@@ -159,7 +166,7 @@ export default function CartPage() {
                   </div>
                 </div>
 
-                <Link to="/checkout" className="block w-full text-center py-4 px-6 rounded-xl font-bold text-xl transition-all hover:scale-105" style={{
+                <Link to="/checkout" className="block w-full text-center py-4 px-6 rounded-xl font-bold text-xl transition-all hover:-translate-y-0.5 hover:shadow-lg" style={{
                   background: GOLD, color: CHAR, fontFamily: "Anton, sans-serif", letterSpacing:1
                 }}>Send order</Link>
                 <p style={{fontFamily:"Inter, sans-serif", color: GREY, fontSize:12, textAlign:"center", marginTop:16}}>

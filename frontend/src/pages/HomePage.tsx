@@ -1,15 +1,17 @@
-import { useState, useEffect, useRef } from "react";
+import { useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, useScroll, useTransform } from "motion/react";
-import { Flame, ArrowRight } from "lucide-react";
+import { Flame, ArrowRight, Snowflake, ChefHat, HandPlatter, Zap, Target, MapPin } from "lucide-react";
 import { RED, ORANGE, GOLD, CHAR, CREAM, GREY, IMGS } from "../constants/brand";
 import { menuCategories, sauces } from "../constants/data";
 import { fadeUp, fromLeft, fromRight, scaleIn, stagger, wordUp } from "../lib/motion";
 import Section from "../components/ui/Section";
 import SectionTitle from "../components/ui/SectionTitle";
+import IconBadge from "../components/ui/IconBadge";
 import MenuCard from "../components/home/MenuCard";
 import SauceCard from "../components/home/SauceCard";
 import ContactForm from "../components/home/ContactForm";
+import ReviewsSection from "../components/home/ReviewsSection";
 import FanFavorites from "../components/home/FanFavorites";
 import Reveal from "../components/anim/Reveal";
 import Marquee from "../components/anim/Marquee";
@@ -25,7 +27,6 @@ const HEADLINE = [
 export default function HomePage() {
   const navigate = useNavigate();
   const heroRef = useRef<HTMLDivElement>(null);
-  const [flame, setFlame] = useState(0);
 
   // Parallax: background drifts slower than the content as you scroll away.
   const { scrollYProgress } = useScroll({
@@ -37,12 +38,6 @@ export default function HomePage() {
   const contentY = useTransform(scrollYProgress, [0, 1], ["0%", "40%"]);
   const contentOpacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
 
-  useEffect(() => {
-    const t = setInterval(() => setFlame((f) => (f + 1) % 3), 600);
-    return () => clearInterval(t);
-  }, []);
-
-  const flames = ["🔥", "🔥", "🔥"];
 
   return (
     <div>
@@ -253,8 +248,15 @@ export default function HomePage() {
           transition={{ delay: 1.6, type: "spring", stiffness: 200, damping: 14 }}
           style={{ background: GOLD, boxShadow: `0 8px 32px ${GOLD}88` }}
         >
+          <motion.span
+            animate={{ rotate: [0, -10, 10, 0], scale: [1, 1.15, 1] }}
+            transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }}
+            style={{ display: "inline-flex" }}
+          >
+            <Flame size={18} style={{ color: RED }} fill={RED} />
+          </motion.span>
           <span style={{ fontFamily: "Anton, sans-serif", fontSize: 16, color: CHAR, letterSpacing: 1 }}>
-            {flames[flame]} HOT & FRESH TODAY
+            HOT & FRESH TODAY
           </span>
         </motion.div>
 
@@ -298,8 +300,8 @@ export default function HomePage() {
           </motion.div>
           <motion.div variants={fromRight}>
             <div
-              className="text-sm font-bold tracking-widest mb-3"
-              style={{ color: ORANGE, fontFamily: "Inter, sans-serif" }}
+              className="subhead mb-3"
+              style={{ color: ORANGE, fontSize: 19 }}
             >
               OUR PHILOSOPHY
             </div>
@@ -343,7 +345,7 @@ export default function HomePage() {
       {/* ── Fan Favorites carousel (Swiper) ── */}
       <Section style={{ background: CHAR }}>
         <div className="max-w-7xl mx-auto">
-          <SectionTitle light sub="Swipe, drag, or just watch them spin. The wings people come back for.">
+          <SectionTitle light eyebrow="Crowd Pleasers" sub="Swipe, drag, or just watch them spin. The wings people come back for.">
             FAN FAVORITES
           </SectionTitle>
           <FanFavorites />
@@ -351,9 +353,9 @@ export default function HomePage() {
       </Section>
 
       {/* ── Menu Categories ── */}
-      <Section style={{ background: CREAM }}>
+      <Section className="kraft">
         <div className="max-w-7xl mx-auto">
-          <SectionTitle sub="Every craving covered. Pick your poison.">WHAT WE SERVE</SectionTitle>
+          <SectionTitle eyebrow="Our Menu" sub="Every craving covered. Pick your poison.">WHAT WE SERVE</SectionTitle>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {menuCategories.map((cat, i) => (
               <MenuCard key={cat.slug} cat={cat} index={i} />
@@ -362,7 +364,7 @@ export default function HomePage() {
           <div className="text-center mt-12">
             <Link
               to="/menu"
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-xl font-bold text-lg transition-all hover:scale-105"
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-xl font-bold text-lg transition-all hover:-translate-y-0.5 hover:shadow-lg"
               style={{ background: CHAR, color: "#fff", fontFamily: "Inter, sans-serif" }}
             >
               Full Menu <ArrowRight size={18} />
@@ -385,9 +387,9 @@ export default function HomePage() {
             viewport={{ once: true, amount: 0.3 }}
           >
             {[
-              { icon: "❄️", title: "Never Frozen", desc: "Fresh-cracked wings delivered daily. We refuse to compromise on freshness — ever." },
-              { icon: "🏠", title: "House-Made Sauces", desc: "Every sauce is crafted in-house from real ingredients. No bottles. No shortcuts." },
-              { icon: "🤲", title: "Hand-Tossed Daily", desc: "Every order is sauced by hand. Because wings deserve human attention." },
+              { icon: Snowflake, color: GOLD, title: "Never Frozen", desc: "Fresh-cracked wings delivered daily. We refuse to compromise on freshness — ever." },
+              { icon: ChefHat, color: ORANGE, title: "House-Made Sauces", desc: "Every sauce is crafted in-house from real ingredients. No bottles. No shortcuts." },
+              { icon: HandPlatter, color: GOLD, title: "Hand-Tossed Daily", desc: "Every order is sauced by hand. Because wings deserve human attention." },
             ].map((b) => (
               <motion.div
                 key={b.title}
@@ -397,7 +399,9 @@ export default function HomePage() {
                 className="text-center p-8 rounded-2xl"
                 style={{ background: "rgba(255,255,255,0.12)" }}
               >
-                <div className="text-5xl mb-4">{b.icon}</div>
+                <div className="flex justify-center mb-4">
+                  <IconBadge icon={b.icon} color={b.color} size={60} />
+                </div>
                 <h3 style={{ fontFamily: "Anton, sans-serif", fontSize: 24, color: "#fff", letterSpacing: 1, marginBottom: 12 }}>
                   {b.title.toUpperCase()}
                 </h3>
@@ -454,9 +458,9 @@ export default function HomePage() {
             viewport={{ once: true, amount: 0.3 }}
           >
             {[
-              { icon: "⚡", title: "Lightning Fast", desc: "Order-to-table in under 10 minutes. We prep fresh, not fast-food slow." },
-              { icon: "🎯", title: "Flavor First", desc: "No filler. No fluff. Just perfectly sauced wings done right every single time." },
-              { icon: "📍", title: "Order Your Way", desc: "Dine-in, takeout, or delivery. CraveWing comes to you." },
+              { icon: Zap, color: ORANGE, title: "Lightning Fast", desc: "Order-to-table in under 10 minutes. We prep fresh, not fast-food slow." },
+              { icon: Target, color: RED, title: "Flavor First", desc: "No filler. No fluff. Just perfectly sauced wings done right every single time." },
+              { icon: MapPin, color: ORANGE, title: "Order Your Way", desc: "Dine-in, takeout, or delivery. CraveWing comes to you." },
             ].map((p) => (
               <motion.div
                 key={p.title}
@@ -466,7 +470,9 @@ export default function HomePage() {
                 className="flex flex-col items-center text-center p-8 rounded-2xl border-2 hover:shadow-xl duration-300"
                 style={{ borderColor: "#e0d0c0", background: "#fff" }}
               >
-                <div className="text-4xl mb-4">{p.icon}</div>
+                <div className="mb-4">
+                  <IconBadge icon={p.icon} color={p.color} size={56} />
+                </div>
                 <h3 style={{ fontFamily: "Anton, sans-serif", fontSize: 22, color: CHAR, letterSpacing: 1, marginBottom: 12 }}>
                   {p.title.toUpperCase()}
                 </h3>
@@ -477,8 +483,11 @@ export default function HomePage() {
         </div>
       </Section>
 
+      {/* ── Reviews ── */}
+      <ReviewsSection background="#fff" />
+
       {/* ── Contact ── */}
-      <Section style={{ background: "#fff" }}>
+      <Section style={{ background: CREAM }}>
         <div className="max-w-7xl mx-auto">
           <SectionTitle sub="Questions? Feedback? Just really hungry and wanna chat? We'd love to hear from you.">
             GET IN TOUCH
@@ -490,11 +499,11 @@ export default function HomePage() {
             whileInView="show"
             viewport={{ once: true, amount: 0.25 }}
           >
-            <motion.div variants={fromLeft} className="rounded-2xl overflow-hidden h-96" style={{ background: "#f5f5f5" }}>
+            <motion.div variants={fromLeft} className="rounded-2xl overflow-hidden h-96 flex items-center justify-center" style={{ background: "#fff" }}>
               <img
-                src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=800&h=600&fit=crop&auto=format"
-                alt="Contact us"
-                className="w-full h-full object-cover"
+                src="/img.png"
+                alt="Order CraveWing from your phone"
+                className="w-full h-full object-contain"
               />
             </motion.div>
             <motion.div variants={fromRight} className="p-8 rounded-2xl" style={{ background: "#fff", border: "2px solid #f0e0d0" }}>

@@ -31,6 +31,32 @@
   --chart-4: #221A17;
   --chart-5: #5E5650;
   --radius: 0.75rem;
+
+  /* ── Fluid type scale — clamp(min, preferred, max) ── */
+  --text-hero:    clamp(3.5rem, 8vw, 7rem);
+  --text-display: clamp(2.75rem, 6vw, 5rem);
+  --text-h1:      clamp(2.25rem, 5vw, 3.75rem);
+  --text-h2:      clamp(1.875rem, 3.6vw, 3rem);
+  --text-h3:      clamp(1.35rem, 2.2vw, 1.9rem);
+  --text-lead:    clamp(1.125rem, 1.4vw, 1.375rem);
+  --text-eyebrow: 0.8125rem;
+
+  /* ── Tracking ── */
+  --track-display: 0.02em;   /* Anton, slightly open */
+  --track-eyebrow: 0.2em;    /* wide uppercase labels */
+  --track-body:   -0.011em;  /* Inter optically tighter */
+
+  /* ── Radius scale (was one flat value) ── */
+  --radius-tag:   4px;
+  --radius-card:  14px;
+  --radius-panel: 24px;
+  --radius-pill:  999px;
+
+  /* ── Layered, warm-tinted shadows ── */
+  --shadow-sm:   0 1px 2px rgba(34,26,23,.06);
+  --shadow-card: 0 1px 2px rgba(34,26,23,.06), 0 10px 28px -10px rgba(214,41,30,.20);
+  --shadow-lift: 0 2px 4px rgba(34,26,23,.08), 0 26px 50px -16px rgba(214,41,30,.30);
+
   --sidebar: #221A17;
   --sidebar-foreground: #FFF6EC;
   --sidebar-primary: #D6291E;
@@ -137,28 +163,36 @@
     font-size: var(--font-size);
   }
 
+  /* Display type wants tight leading + tracking. Components may override size/family inline. */
   h1 {
-    font-size: var(--text-2xl);
+    font-size: var(--text-h1);
     font-weight: var(--font-weight-medium);
-    line-height: 1.5;
+    line-height: 1.04;
+    letter-spacing: var(--track-display);
   }
 
   h2 {
-    font-size: var(--text-xl);
+    font-size: var(--text-h2);
     font-weight: var(--font-weight-medium);
-    line-height: 1.5;
+    line-height: 1.08;
+    letter-spacing: var(--track-display);
   }
 
   h3 {
-    font-size: var(--text-lg);
+    font-size: var(--text-h3);
     font-weight: var(--font-weight-medium);
-    line-height: 1.5;
+    line-height: 1.15;
   }
 
   h4 {
     font-size: var(--text-base);
     font-weight: var(--font-weight-medium);
-    line-height: 1.5;
+    line-height: 1.25;
+  }
+
+  p {
+    line-height: 1.65;
+    letter-spacing: var(--track-body);
   }
 
   label {
@@ -177,5 +211,152 @@
     font-size: var(--text-base);
     font-weight: var(--font-weight-normal);
     line-height: 1.5;
+    letter-spacing: var(--track-body);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Global polish layer — texture, image grade, reusable helpers, motion prefs
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* Film-grain overlay: kills the flat "template" look without touching layout. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.04;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Consistent warm grade so Unsplash food shots read as one shoot. */
+img {
+  filter: saturate(1.06) contrast(1.03) brightness(0.995);
+}
+
+/* Food photos on cards warm up + richen on hover (group-hover on a parent). */
+.food-img {
+  transition: filter 0.5s ease, transform 0.6s ease;
+}
+.group:hover .food-img {
+  filter: saturate(1.22) contrast(1.08) brightness(1.03);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Form fields — one consistent, tactile look across every form on the site:
+   warm 1.5px border, soft inset depth, and a gold focus ring. Unlayered so it
+   lifts the plainer inputs (Checkout) while inline colors still win at rest.
+   ───────────────────────────────────────────────────────────────────────────── */
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="submit"]):not([type="button"]),
+textarea,
+select {
+  border-width: 1.5px;
+  border-style: solid;
+  border-color: rgba(34, 26, 23, 0.2);
+  border-radius: 12px;
+  background-color: #fffbf7;
+  box-shadow: inset 0 1px 2px rgba(34, 26, 23, 0.05);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):hover:not(:focus),
+textarea:hover:not(:focus),
+select:hover:not(:focus) {
+  border-color: rgba(34, 26, 23, 0.3);
+}
+
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--accent) !important; /* gold */
+  background-color: #fff;
+  box-shadow: 0 0 0 3px rgba(252, 179, 22, 0.28), inset 0 1px 2px rgba(34, 26, 23, 0.04) !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: rgba(94, 86, 80, 0.55);
+}
+
+/* Visible keyboard focus ring on buttons & links (accessibility). */
+a:focus-visible,
+button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(252, 179, 22, 0.45);
+  border-radius: 8px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Professional button baseline — smooth, restrained motion + a tactile press,
+   instead of the "AI" bounce. Applies to every <button> without changing shape
+   or color (pills/utilities still win on radius).
+   ───────────────────────────────────────────────────────────────────────────── */
+button {
+  transition: transform 0.14s ease, box-shadow 0.22s ease, filter 0.2s ease,
+    background-color 0.2s ease, opacity 0.2s ease;
+}
+button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Editorial eyebrow label above section titles. */
+.eyebrow {
+  display: inline-block;
+  font-family: 'Inter', sans-serif;
+  font-size: var(--text-eyebrow);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: var(--track-eyebrow);
+  line-height: 1;
+}
+
+/* Handwritten accent for "sauce it" style flourishes. */
+.script {
+  font-family: 'Caveat', cursive;
+  font-weight: 600;
+}
+
+/* Condensed sub-header — Bebas Neue, for the small labels above section titles. */
+.subhead {
+  font-family: 'Bebas Neue', sans-serif;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+/* Kraft-paper texture — evokes takeaway packaging behind menu sections.
+   Warm base + faint diagonal weave + soft fibre speckle. */
+.kraft {
+  background-color: #f3e7d4;
+  background-image:
+    repeating-linear-gradient(45deg, rgba(154, 120, 74, 0.05) 0 2px, transparent 2px 5px),
+    repeating-linear-gradient(-45deg, rgba(154, 120, 74, 0.04) 0 2px, transparent 2px 5px),
+    radial-gradient(rgba(120, 90, 55, 0.06) 1px, transparent 1px);
+  background-size: auto, auto, 7px 7px;
+}
+
+/* Tactile card edge: warm layered shadow + 1px inner highlight. */
+.card-depth {
+  box-shadow: var(--shadow-card), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+.card-depth:hover {
+  box-shadow: var(--shadow-lift), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+/* Honor reduced-motion everywhere (Lenis already opts out separately). */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

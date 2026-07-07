@@ -1,23 +1,61 @@
 import { useState, useEffect } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { Clock, MapPin, ChefHat, CheckCircle, Package, ArrowRight, Bike } from "lucide-react";
+import { ChefHat, Check, Package, ArrowRight, Bike } from "lucide-react";
 import { RED, ORANGE, GOLD, CHAR, CREAM, GREY } from "../constants/brand";
 import Section from "../components/ui/Section";
+import { get } from "../lib/api";
+
+interface OrderData {
+  reference: string;
+  email: string;
+  first_name?: string | null;
+  last_name: string;
+  phone?: string | null;
+  address: string;
+  apartment?: string | null;
+  city: string;
+  postal_code?: string | null;
+  status: string;
+}
+
+const STATUS_STEP: Record<string, number> = {
+  received: 1,
+  preparing: 2,
+  on_the_way: 3,
+  delivered: 4,
+};
 
 export default function OrderTrackingPage() {
   const [searchParams] = useSearchParams();
-  const orderId = searchParams.get("order") || "BLAZIN-1234";
+  const orderId = searchParams.get("order") || "CRAVE-1234";
   const [status, setStatus] = useState(1);
+  const [order, setOrder] = useState<OrderData | null>(null);
+  const [loaded, setLoaded] = useState(false);
 
+  // Pull the real order details from the API (falls back gracefully if offline).
   useEffect(() => {
-    const timer = setInterval(() => {
-      setStatus((prev) => Math.min(prev + 1, 4));
-    }, 4000);
-    return () => clearInterval(timer);
-  }, []);
+    if (!orderId) return;
+    let active = true;
+    get<OrderData>(`/orders/${orderId}`)
+      .then((o) => {
+        if (!active) return;
+        setOrder(o);
+        setStatus(STATUS_STEP[o.status] ?? 1);
+      })
+      .catch(() => {})
+      .finally(() => active && setLoaded(true));
+    return () => {
+      active = false;
+    };
+  }, [orderId]);
+
+
+  const customerName = order
+    ? `${order.first_name ?? ""} ${order.last_name}`.trim()
+    : "";
 
   const steps = [
-    { id: 1, title: "Order Received", icon: CheckCircle, description: "Your order has been received" },
+    { id: 1, title: "Order Received", icon: Check, description: "Your order has been received" },
     { id: 2, title: "Preparing", icon: ChefHat, description: "Our chefs are preparing your food" },
     { id: 3, title: "On the way", icon: Bike, description: "Your order is out for delivery" },
     { id: 4, title: "Delivered", icon: Package, description: "Your order has been delivered" },
@@ -95,58 +133,60 @@ export default function OrderTrackingPage() {
             </div>
           </div>
 
-          <div className="mb-16">
-            <div className="relative">
+          <div className="mb-14 overflow-x-auto">
+            <div className="relative min-w-[520px] px-2">
+              {/* Horizontal track between the first and last icon centers (each 12.5% in) */}
+              <div className="absolute top-[26px] left-[12.5%] right-[12.5%] h-1 rounded-full" style={{ background: "#e5e7eb" }} />
+              {/* Progress fill — static, sized to the current status */}
               <div
-                className="absolute left-6 top-0 bottom-0 w-1"
-                style={{ background: "#e5e7eb" }}
-              />
-              <div
-                className="absolute left-6 top-0 w-1 transition-all duration-1000"
+                className="absolute top-[26px] left-[12.5%] h-1 rounded-full"
                 style={{
-                  height: `${((status) / 4) * 100}%`,
-                  background: status === 4 ? "#10b981" : RED,
+                  width: `${(Math.max(status - 1, 0) / 3) * 75}%`,
+                  background: status === 4 ? "#10b981" : `linear-gradient(90deg, ${RED}, ${ORANGE})`,
                 }}
               />
-              <div className="space-y-12">
-                {steps.map((step, index) => {
+
+              <div className="grid grid-cols-4 gap-2">
+                {steps.map((step) => {
+                  const done = step.id < status;
+                  const current = step.id === status;
                   const isActive = step.id <= status;
-                  const Icon = step.icon;
+                  const Icon = done ? Check : step.icon;
+                  const color = step.id === 4 && isActive ? "#10b981" : RED;
                   return (
-                    <div key={step.id} className="relative flex gap-6">
-                      <div
-                        className={`w-14 h-14 rounded-full flex items-center justify-center z-10 transition-all ${
-                    isActive ? "scale-110" : ""
-                  }`}
-                  style={{
-                    background: isActive ? (step.id === 4 ? "#10b981" : RED) : "#fff",
-                    border: `4px solid ${isActive ? (step.id === 4 ? "#10b981" : RED) : "#e5e7eb"}`,
-                    boxShadow: isActive ? `0 0 20px ${(step.id === 4 ? "#10b981" : RED)}40` : "none",
-                  }}
-                      >
-                        <Icon size={28} color="#fff" />
-                      </div>
-                      <div className="pt-2">
-                        <h3
+                    <div key={step.id} className="flex flex-col items-center text-center px-1">
+                      <div className="relative z-10 w-14 h-14 mb-4">
+                        <div
+                          className="w-14 h-14 rounded-full flex items-center justify-center"
                           style={{
-                            fontFamily: "Anton, sans-serif",
-                            fontSize: 24,
-                            color: isActive ? CHAR : GREY,
-                            marginBottom: 4,
+                            background: isActive ? color : "#fff",
+                            border: `4px solid ${isActive ? color : "#e5e7eb"}`,
+                            boxShadow: isActive ? `0 0 24px ${color}55` : "none",
                           }}
+                        >
+                          <Icon size={done ? 28 : 26} color={isActive ? "#fff" : "#cbd5e1"} strokeWidth={done ? 3 : 2.4} />
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-center gap-1.5 flex-wrap">
+                        <h3
+                          className="text-[15px] sm:text-[19px]"
+                          style={{ fontFamily: "Anton, sans-serif", color: isActive ? CHAR : GREY, letterSpacing: 0.3 }}
                         >
                           {step.title}
                         </h3>
-                        <p
-                          style={{
-                            fontFamily: "Inter, sans-serif",
-                            color: GREY,
-                            fontSize: 16,
-                          }}
-                        >
-                          {step.description}
-                        </p>
+                        {current && (
+                          <span
+                            className="px-2 py-0.5 rounded-full text-[10px] font-bold"
+                            style={{ background: `${color}1f`, color, fontFamily: "Inter, sans-serif" }}
+                          >
+                            LIVE
+                          </span>
+                        )}
                       </div>
+                      <p className="mt-1" style={{ fontFamily: "Inter, sans-serif", color: GREY, fontSize: 13.5, lineHeight: 1.5 }}>
+                        {step.description}
+                      </p>
                     </div>
                   );
                 })}
@@ -173,9 +213,17 @@ export default function OrderTrackingPage() {
                   lineHeight: 1.8,
                 }}
               >
-                123 Main Street<br />
-                New York, NY 10001<br />
-                United States
+                {order ? (
+                  <>
+                    {order.address}
+                    {order.apartment ? <>, {order.apartment}</> : null}
+                    <br />
+                    {order.city}
+                    {order.postal_code ? ` ${order.postal_code}` : ""}
+                  </>
+                ) : (
+                  loaded ? "Address on file" : "Loading delivery details…"
+                )}
               </p>
             </div>
             <div className="p-8 rounded-2xl" style={{ background: CREAM }}>
@@ -196,9 +244,15 @@ export default function OrderTrackingPage() {
                   lineHeight: 1.8,
                 }}
               >
-                John Doe<br />
-                (555) 123-4567<br />
-                john@example.com
+                {order ? (
+                  <>
+                    {customerName || "—"}<br />
+                    {order.phone || "No phone provided"}<br />
+                    {order.email}
+                  </>
+                ) : (
+                  loaded ? "Details on file" : "Loading customer details…"
+                )}
               </p>
             </div>
           </div>
@@ -206,7 +260,7 @@ export default function OrderTrackingPage() {
           <div className="text-center">
             <Link
               to="/"
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-xl font-bold text-lg transition-all hover:scale-105"
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-xl font-bold text-lg transition-all hover:-translate-y-0.5 hover:shadow-lg"
               style={{ background: CHAR, color: "#fff", fontFamily: "Inter, sans-serif" }}
             >
               Back to Home <ArrowRight size={18} />

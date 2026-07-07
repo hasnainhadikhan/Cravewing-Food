@@ -25,6 +25,17 @@ export const scaleIn: Variants = {
   show: { opacity: 1, scale: 1, transition: { duration: 0.6, ease: EASE_SPRING } },
 };
 
+// Blur + rise reveal — a distinct signature for sauce / feature cards.
+export const blurIn: Variants = {
+  hidden: { opacity: 0, y: 24, filter: "blur(12px)" },
+  show: {
+    opacity: 1,
+    y: 0,
+    filter: "blur(0px)",
+    transition: { duration: 0.7, ease: EASE_OUT },
+  },
+};
+
 export const fromLeft: Variants = {
   hidden: { opacity: 0, x: -60 },
   show: { opacity: 1, x: 0, transition: { duration: 0.7, ease: EASE_OUT } },

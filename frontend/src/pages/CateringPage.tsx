@@ -1,9 +1,18 @@
 import { useState } from "react";
-import { Check, Send } from "lucide-react";
+import { Check, Send, Star, Drumstick, Flame, Crown } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { RED, ORANGE, GOLD, CHAR, CREAM, GREY } from "../constants/brand";
 import { cateringPackages } from "../constants/data";
+import { post } from "../lib/api";
 import Section from "../components/ui/Section";
 import SectionTitle from "../components/ui/SectionTitle";
+
+// Package → branded icon (replaces emoji emblems in the data).
+const PKG_ICONS: Record<string, LucideIcon> = {
+  "The Snack Pack": Drumstick,
+  "The Party Tray": Flame,
+  "The Flavor Feast": Crown,
+};
 
 export default function CateringPage() {
   const [form, setForm] = useState({
@@ -16,10 +25,29 @@ export default function CateringPage() {
     notes: "",
   });
   const [sent, setSent] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSent(true);
+    setSubmitting(true);
+    setError("");
+    try {
+      await post("/catering", {
+        name: form.name,
+        email: form.email,
+        phone: form.phone,
+        event_date: form.date,
+        guests: Number(form.guests),
+        package: form.pkg,
+        notes: form.notes,
+      });
+      setSent(true);
+    } catch {
+      setError("Couldn't send your request. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -66,7 +94,7 @@ export default function CateringPage() {
       {/* Packages */}
       <Section style={{ background: CREAM }}>
         <div className="max-w-6xl mx-auto">
-          <SectionTitle sub="Pick your level. We handle the rest.">CATERING PACKAGES</SectionTitle>
+          <SectionTitle eyebrow="Feed The Crew" sub="Pick your level. We handle the rest.">CATERING PACKAGES</SectionTitle>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {cateringPackages.map((pkg) => (
               <div
@@ -79,14 +107,33 @@ export default function CateringPage() {
               >
                 {pkg.featured && (
                   <div
-                    className="absolute top-0 left-0 right-0 py-2 text-center text-xs font-bold tracking-widest"
+                    className="absolute top-0 left-0 right-0 py-2 flex items-center justify-center gap-1.5 text-xs font-bold tracking-widest"
                     style={{ background: RED, color: "#fff", fontFamily: "Inter, sans-serif" }}
                   >
-                    ⭐ MOST POPULAR
+                    <Star size={13} fill="#fff" strokeWidth={0} /> MOST POPULAR
                   </div>
                 )}
                 <div className={`p-8 ${pkg.featured ? "pt-12" : ""}`}>
-                  <div className="text-4xl mb-3">{pkg.icon}</div>
+                  <div className="mb-3">
+                    {(() => {
+                      const Icon = PKG_ICONS[pkg.name] ?? Drumstick;
+                      return (
+                        <span
+                          className="inline-flex items-center justify-center"
+                          style={{
+                            width: 56,
+                            height: 56,
+                            borderRadius: 16,
+                            background: pkg.featured ? `${GOLD}22` : `${ORANGE}18`,
+                            border: `1px solid ${pkg.featured ? GOLD : ORANGE}35`,
+                            color: pkg.featured ? GOLD : ORANGE,
+                          }}
+                        >
+                          <Icon size={26} strokeWidth={2.2} />
+                        </span>
+                      );
+                    })()}
+                  </div>
                   <h3
                     style={{
                       fontFamily: "Anton, sans-serif",
@@ -142,7 +189,7 @@ export default function CateringPage() {
                       setForm((p) => ({ ...p, pkg: pkg.name }));
                       document.getElementById("catering-form")?.scrollIntoView({ behavior: "smooth" });
                     }}
-                    className="w-full py-3 rounded-xl font-bold transition-all hover:scale-105"
+                    className="w-full py-3 rounded-xl font-bold transition-all hover:-translate-y-0.5 hover:shadow-lg"
                     style={{
                       background: pkg.featured ? GOLD : RED,
                       color: pkg.featured ? CHAR : "#fff",
@@ -164,6 +211,10 @@ export default function CateringPage() {
           <SectionTitle sub="Tell us about your event and we'll get back to you within 24 hours.">
             REQUEST A QUOTE
           </SectionTitle>
+          <div
+            className="rounded-2xl border p-6 sm:p-8"
+            style={{ borderColor: "rgba(34,26,23,0.15)", background: "#fffdfa", boxShadow: "var(--shadow-card)" }}
+          >
           {sent ? (
             <div className="text-center py-12">
               <div
@@ -209,9 +260,9 @@ export default function CateringPage() {
                       value={form[k]}
                       onChange={(e) => setForm((p) => ({ ...p, [k]: e.target.value }))}
                       className="w-full px-4 py-3 rounded-xl border-2 outline-none"
-                      style={{ borderColor: "#e0d0c0", fontFamily: "Inter, sans-serif" }}
+                      style={{ borderColor: "rgba(34,26,23,0.22)", fontFamily: "Inter, sans-serif" }}
                       onFocus={(e) => { e.currentTarget.style.borderColor = GOLD; }}
-                      onBlur={(e) => { e.currentTarget.style.borderColor = "#e0d0c0"; }}
+                      onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(34,26,23,0.22)"; }}
                     />
                   </div>
                 ))}
@@ -232,7 +283,7 @@ export default function CateringPage() {
                     value={form.pkg}
                     onChange={(e) => setForm((p) => ({ ...p, pkg: e.target.value }))}
                     className="w-full px-4 py-3 rounded-xl border-2 outline-none"
-                    style={{ borderColor: "#e0d0c0", fontFamily: "Inter, sans-serif", background: "#fff" }}
+                    style={{ borderColor: "rgba(34,26,23,0.22)", fontFamily: "Inter, sans-serif", background: "#fff" }}
                   >
                     <option value="">Select a package...</option>
                     {cateringPackages.map((p) => (
@@ -263,20 +314,25 @@ export default function CateringPage() {
                   value={form.notes}
                   onChange={(e) => setForm((p) => ({ ...p, notes: e.target.value }))}
                   className="w-full px-4 py-3 rounded-xl border-2 outline-none resize-none"
-                  style={{ borderColor: "#e0d0c0", fontFamily: "Inter, sans-serif" }}
+                  style={{ borderColor: "rgba(34,26,23,0.22)", fontFamily: "Inter, sans-serif" }}
                   onFocus={(e) => { e.currentTarget.style.borderColor = GOLD; }}
-                  onBlur={(e) => { e.currentTarget.style.borderColor = "#e0d0c0"; }}
+                  onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(34,26,23,0.22)"; }}
                 />
               </div>
+              {error && (
+                <p style={{ color: RED, fontFamily: "Inter, sans-serif", fontSize: 14 }}>{error}</p>
+              )}
               <button
                 type="submit"
-                className="py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all hover:scale-105"
+                disabled={submitting}
+                className="py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all hover:-translate-y-0.5 hover:shadow-lg"
                 style={{ background: RED, color: "#fff", fontFamily: "Inter, sans-serif" }}
               >
-                <Send size={18} /> Submit Catering Request
+                <Send size={18} /> {submitting ? "Sending..." : "Submit Catering Request"}
               </button>
             </form>
           )}
+          </div>
         </div>
       </Section>
     </div>

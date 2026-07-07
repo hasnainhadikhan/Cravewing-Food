@@ -1,4 +1,5 @@
 import { motion } from "motion/react";
+import { Flame } from "lucide-react";
 
 interface MarqueeProps {
   items: string[];
@@ -49,13 +50,10 @@ export default function Marquee({
               {item}
             </span>
             <span
-              style={{
-                fontSize: "clamp(14px, 2vw, 22px)",
-                color: separatorColor || color,
-                opacity: 0.6,
-              }}
+              className="inline-flex items-center"
+              style={{ color: separatorColor || color, opacity: 0.75 }}
             >
-              ✦
+              <Flame size={18} fill="currentColor" strokeWidth={0} />
             </span>
           </span>
         ))}

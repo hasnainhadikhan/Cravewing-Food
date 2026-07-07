@@ -12,13 +12,14 @@ export const menuCategories = [
 ];
 
 // ─── Sauces ───────────────────────────────────────────────────────────────────
+const sauceImg = (id: string) => `https://images.unsplash.com/${id}?w=240&h=240&fit=crop&auto=format`;
 export const sauces = [
-  { name: "Buffalo Classic", heat: 2, desc: "The OG. Tangy, buttery, and just the right kick. A wing religion.", color: "#E8420A" },
-  { name: "Honey Mustard Gold", heat: 1, desc: "Sweet honey meets sharp mustard. Zero heat, full flavor.", color: "#FCB316" },
-  { name: "Lemon Pepper", heat: 1, desc: "Zesty citrus, cracked pepper crust. Light, bright, addictive.", color: "#F0C040" },
-  { name: "Garlic Parm", heat: 1, desc: "Roasted garlic, aged parmesan, herb butter. The crowd pleaser.", color: "#C8A96E" },
-  { name: "Mango Habanero", heat: 4, desc: "Sweet tropical fruit with a habanero sucker-punch. Wildly good.", color: "#F26B21" },
-  { name: "Nashville Hot", heat: 5, desc: "Cayenne-forward, bold spice paste. Not for the faint of heart.", color: "#D6291E" },
+  { name: "Buffalo Classic", heat: 2, desc: "The OG. Tangy, buttery, and just the right kick. A wing religion.", color: "#E8420A", img: sauceImg("photo-1575919159574-e49dc9e1228f") },
+  { name: "Honey Mustard Gold", heat: 1, desc: "Sweet honey meets sharp mustard. Zero heat, full flavor.", color: "#FCB316", img: sauceImg("photo-1600984177310-c86c8f8fa9c7") },
+  { name: "Lemon Pepper", heat: 1, desc: "Zesty citrus, cracked pepper crust. Light, bright, addictive.", color: "#F0C040", img: sauceImg("photo-1734989435134-7e4885259231") },
+  { name: "Garlic Parm", heat: 1, desc: "Roasted garlic, aged parmesan, herb butter. The crowd pleaser.", color: "#C8A96E", img: sauceImg("photo-1563599175592-c58dc214deff") },
+  { name: "Mango Habanero", heat: 4, desc: "Sweet tropical fruit with a habanero sucker-punch. Wildly good.", color: "#F26B21", img: sauceImg("photo-1779939855596-8506096e2ebe") },
+  { name: "Nashville Hot", heat: 5, desc: "Cayenne-forward, bold spice paste. Not for the faint of heart.", color: "#D6291E", img: sauceImg("photo-1533841175647-39fea57b86ba") },
 ];
 
 export const SAUCES_LIST = ["Buffalo Classic", "Honey Mustard Gold", "Lemon Pepper", "Garlic Parm", "Mango Habanero", "Nashville Hot"];
@@ -27,7 +28,6 @@ export const SAUCES_LIST = ["Buffalo Classic", "Honey Mustard Gold", "Lemon Pepp
 export const fullMenu = [
   {
     category: "Classic Wings",
-    icon: "🍗",
     image: IMGS.classicWings,
     items: [
       { name: "6pc Classic Wings", price: "$10.99", desc: "Six bone-in wings, hand-sauced in your choice of sauce.", tags: ["Best Seller"], image: IMGS.classicWings },
@@ -38,7 +38,6 @@ export const fullMenu = [
   },
   {
     category: "Boneless Wings",
-    icon: "🔥",
     image: IMGS.bonelessWings,
     items: [
       { name: "8pc Boneless Wings", price: "$11.99", desc: "All the flavor, none of the bones. Perfect for dipping.", tags: [], image: IMGS.bonelessWings },
@@ -48,7 +47,6 @@ export const fullMenu = [
   },
   {
     category: "Tenders",
-    icon: "✨",
     image: IMGS.tenders,
     items: [
       { name: "3pc Tenders", price: "$8.99", desc: "Hand-breaded, never frozen, always crispy.", tags: [], image: IMGS.tenders },
@@ -58,41 +56,27 @@ export const fullMenu = [
   },
   {
     category: "Sandwiches",
-    icon: "🥪",
     image: IMGS.sandwiches,
     items: [
       { name: "Classic Crispy Sandwich", price: "$10.99", desc: "Crispy chicken, pickles, house slaw, brioche bun.", tags: [], image: IMGS.sandwiches },
-      { name: "Nashville Stacker", price: "$12.99", desc: "Nashville hot chicken, coleslaw, dill pickles, extra hot drizzle.", tags: ["Spicy 🌶️"], image: IMGS.sandwiches },
+      { name: "Nashville Stacker", price: "$12.99", desc: "Nashville hot chicken, coleslaw, dill pickles, extra hot drizzle.", tags: ["Spicy"], image: IMGS.sandwiches },
       { name: "Garlic Parm Melt", price: "$12.99", desc: "Garlic parm chicken, provolone, caramelized onion.", tags: ["Fan Fave"], image: IMGS.sandwiches },
-      { name: "Spicy Habanero", price: "$13.49", desc: "Mango habanero glazed chicken, pepper jack, jalapeños. Not responsible.", tags: ["Spicy 🌶️🌶️"], image: IMGS.sandwiches },
+      { name: "Spicy Habanero", price: "$13.49", desc: "Mango habanero glazed chicken, pepper jack, jalapeños. Not responsible.", tags: ["Extra Spicy"], image: IMGS.sandwiches },
     ],
   },
   {
     category: "Loaded Fries",
-    icon: "🍟",
     image: IMGS.loadedFries,
     items: [
       { name: "Char Fries", price: "$5.99", desc: "Seasoned with our secret char blend. Simple, iconic.", tags: [], image: IMGS.loadedFries },
       { name: "Cheese & Bacon Fries", price: "$7.99", desc: "Melted cheddar, crispy bacon, ranch drizzle.", tags: ["Popular"], image: IMGS.loadedFries },
       { name: "Ranch Bomb Fries", price: "$8.49", desc: "Loaded with house ranch, jalapeños, crispy onion.", tags: [], image: IMGS.loadedFries },
-      { name: "Spicy Nacho Fries", price: "$8.99", desc: "Nacho cheese, hot sauce drizzle, pickled peppers.", tags: ["Spicy 🌶️"], image: IMGS.loadedFries },
+      { name: "Spicy Nacho Fries", price: "$8.99", desc: "Nacho cheese, hot sauce drizzle, pickled peppers.", tags: ["Spicy"], image: IMGS.loadedFries },
     ],
   },
-  {
-    category: "Dips & Sides",
-    icon: "🥣",
-    image: IMGS.dips,
-    items: [
-      { name: "House Ranch", price: "$1.49", desc: "House-made creamy ranch.", tags: [], image: IMGS.dips },
-      { name: "Bleu Cheese", price: "$1.49", desc: "Classic chunky bleu.", tags: [], image: IMGS.dips },
-      { name: "Honey Mustard", price: "$1.49", desc: "Sweet, tangy, perfect.", tags: [], image: IMGS.dips },
-      { name: "Coleslaw", price: "$2.99", desc: "House slaw, light & crisp.", tags: [], image: IMGS.dips },
-      { name: "Comeback Sauce", price: "$1.49", desc: "Our secret comeback sauce. You will come back.", tags: ["Secret"], image: IMGS.dips },
-    ],
-  },
+
   {
     category: "Shakes & Drinks",
-    icon: "🥤",
     image: IMGS.shakes,
     items: [
       { name: "Vanilla Cream Shake", price: "$5.99", desc: "Thick, creamy, real vanilla bean.", tags: [], image: IMGS.shakes },
@@ -104,7 +88,6 @@ export const fullMenu = [
   },
   {
     category: "Combo Meals",
-    icon: "🎯",
     image: IMGS.classicWings,
     items: [
       { name: "Classic Combo", price: "$14.99", desc: "6pc wings + char fries + fountain drink.", tags: ["Best Value"], image: IMGS.classicWings },
@@ -139,7 +122,6 @@ export const cateringPackages = [
     serves: "Serves 10–15",
     price: "$129",
     items: ["40 wings (2 sauce choices)", "3 loaded fries", "Ranch & bleu cheese dips", "Plates & napkins"],
-    icon: "🍗",
     featured: false,
   },
   {
@@ -147,7 +129,6 @@ export const cateringPackages = [
     serves: "Serves 20–30",
     price: "$229",
     items: ["80 wings (3 sauce choices)", "5 loaded fries", "2 dozen boneless", "All dipping sauces", "Plates & napkins"],
-    icon: "🔥",
     featured: true,
   },
   {
@@ -155,7 +136,6 @@ export const cateringPackages = [
     serves: "Serves 40–60",
     price: "$429",
     items: ["160 wings (unlimited sauces)", "Boneless & tenders", "10 loaded fries", "Sandwich platter", "Full service setup"],
-    icon: "👑",
     featured: false,
   },
 ];
